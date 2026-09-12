@@ -763,7 +763,7 @@
                 msgBox.style.color = 'green';
                 msgBox.textContent = '✅ नंबर Google Sheet में save हो गया।';
                 const waPhone = phone.length === 10 ? '91' + phone : phone;
-                const msg = `Namaste, Siddhant Accounting Services Dabra se aapka PAN card ka kaam safal ho gaya hai. (Query/Coupon: ${queryId}). Kripya apna slip/e-PAN prapt karein.`;
+                const msg = `Namaste, Siddhant Accounting Services Dabra se aapka PAN card ka kaam safal ho gaya hai. (Query/Aadhar/Coupon: ${queryId}). Kripya apna slip/e-PAN prapt karein.`;
                 window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
             } catch (err) {
                 console.error(err);
