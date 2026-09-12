@@ -76,7 +76,7 @@
         .service-form label { font-size: 13px; font-weight: 600; color: #444; margin-bottom: 3px; display: block; }
         
         .payment-box-inline { background: #fff; padding: 15px; border: 1px solid #d9534f; border-radius: 6px; text-align: center; margin-top: 5px; }
-        .payment-box-inline img { width: 110px; height: 110px; border: 1px solid #ddd; margin-bottom: 5px; }
+        .payment-box-inline img { width: 290px; height: 290px; border: 1px solid #ddd; margin-bottom: 5px; }
 
         .submit-service-btn { background-color: #d9534f; color: white; border: none; padding: 12px; border-radius: 4px; font-weight: bold; cursor: pointer; width: 100%; font-size: 15px; }
         .submit-service-btn:hover { background-color: #c9302c; }
@@ -194,7 +194,7 @@
                     <h3>💳 2. भुगतान एवं कुल रिकॉर्ड (Payment & Total Count)</h3>
                     <div class="flex-box">
                         <div class="upi-box">
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 290px; height: 290px;" id="mainQrImg">>
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Siddhant QR Code" id="mainQrImg" style="width: 290px; height: 290px;">
                             <p style="font-size: 11px; color: #555;">UPI ID:<br><code>siddhantaccoun1dabra@ptyes</code></p>
                         </div>
                         <div class="count-box">
@@ -229,18 +229,18 @@
                         </div>
                         <div>
                             <label>आईडी या पुराना मोबाइल नंबर</label>
-                            <input type="text" id="lostAadhaar" placeholder="आधार कार्ड नंबर दर्ज करें।" required>
+                            <input type="text" id="lostAadhaar" placeholder="आईडी या मोबाइल नंबर" required>
                         </div>
                         <div>
-                            <label>डआधार कार्ड अपलोड करें (Form photo)</label>
+                            <label>डॉक्यूमेंट अपलोड करें (Form photo)</label>
                             <input type="file" id="lostDoc" required style="background: #fff; padding: 7px;">
                         </div>
 
                         <!-- Payment QR Box inside Lost PAN form -->
                         <div class="payment-box-inline">
-                            <p style="font-size: 18px; color: #d9534f; font-weight: bold; margin-bottom: 5px;">💳 ₹100 भुगतान हेतु QR Code स्कैन करें</p>
+                            <p style="font-size: 13px; color: #d9534f; font-weight: bold; margin-bottom: 5px;">💳 ₹100 भुगतान हेतु QR Code स्कैन करें</p>
                             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 290px; height: 290px;">
-                            <p style="font-size: 16px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
+                            <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm1" onchange="toggleBtn('paymentConfirm1', 'submitLostBtn')" style="width: 18px; height: 18px;"> 
                                 मैंने ₹100 पेमेंट कर दिया है (Payment Done)
@@ -290,9 +290,9 @@
 
                         <!-- Payment QR Box inside e-PAN form -->
                         <div class="payment-box-inline" style="border-color: #28a745;">
-                            <p style="font-size: 16px; color: #28a745; font-weight: bold; margin-bottom: 5px;">💳 ₹80 भुगतान हेतु QR Code स्कैन करें</p>
+                            <p style="font-size: 13px; color: #28a745; font-weight: bold; margin-bottom: 5px;">💳 ₹80 भुगतान हेतु QR Code स्कैन करें</p>
                             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 290px; height: 290px;">
-                            <p style="font-size: 16px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
+                            <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm2" onchange="toggleBtn('paymentConfirm2', 'submitEpanBtn')" style="width: 18px; height: 18px;"> 
                                 मैंने ₹80 पेमेंट कर दिया है (Payment Done)
@@ -348,9 +348,9 @@
 
                         <!-- Payment QR Box inside Surrender PAN form -->
                         <div class="payment-box-inline" style="border-color: #6f42c1;">
-                            <p style="font-size: 16px; color: #6f42c1; font-weight: bold; margin-bottom: 5px;">💳 ₹400 भुगतान हेतु QR Code स्कैन करें</p>
+                            <p style="font-size: 13px; color: #6f42c1; font-weight: bold; margin-bottom: 5px;">💳 ₹400 भुगतान हेतु QR Code स्कैन करें</p>
                             <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 290px; height: 290px;">
-                            <p style="font-size: 16px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
+                            <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm3" onchange="toggleBtn('paymentConfirm3', 'submitSurrenderBtn')" style="width: 18px; height: 18px;"> 
                                 मैंने ₹400 पेमेंट कर दिया है (Payment Done)
@@ -383,7 +383,7 @@
                     <input type="tel" id="regContact" placeholder="10 अंकों का मोबाइल नंबर" pattern="[0-9]{10}" required>
                 </div>
                 <div>
-                    <label>4. नंबर / आईडी (Aadhar Number / Pan Card)</label>
+                    <label>4. नंबर / आईडी (Number / ID Reference)</label>
                     <input type="text" id="regIdNumber" placeholder="नंबर दर्ज करें" required>
                 </div>
                 <div>
@@ -585,7 +585,7 @@
             currentShopName = shopName || id;
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('vendor-panel').style.display = 'block';
-            document.getElementById('welcome-shop-name').innerHTML =  `स्वागत है : ${escapeHtml(currentShopName)} (${escapeHtml(id)})`;
+            document.getElementById('welcome-shop-name').innerHTML = `स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(id)})`;
             document.getElementById('totalPanCount').innerHTML = count ?? 0;
             loadVendorLiveUpdates(id);
         }
@@ -730,7 +730,7 @@
                             </div>
                             <div class="wa-send-section">
                                 <input type="tel" id="customerWaPhone" value="${escapeAttr(savedWa)}" placeholder="ग्राहक का मोबाइल नंबर (10 या 12 अंक)" inputmode="numeric" maxlength="12">
-                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}')">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
+                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}', '${escapeJs(r.slip)}', '${escapeJs(r.epan)}')">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
                                 <div id="waSaveMsg" style="font-size:12px;margin-top:6px;text-align:center;"></div>
                             </div>
                         </div>
@@ -741,8 +741,7 @@
             }
         }
 
-        async function sendSlipToCustomerWhatsApp(queryId) {
-            touchSession();
+        async function sendSlipToCustomerWhatsApp(queryId, slipUrl, epanUrl) {
             const input = document.getElementById('customerWaPhone');
             const phone = (input.value || '').replace(/\D/g, '');
             const msgBox = document.getElementById('waSaveMsg');
@@ -750,20 +749,47 @@
                 alert('कृपया ग्राहक का सही 10 या 12 अंकों का मोबाइल नंबर दर्ज करें!');
                 return;
             }
-            if (!currentLoggedInShop) return;
+            if (!currentLoggedInShop) {
+                alert('पहले Vendor Login करें!');
+                return;
+            }
+
             msgBox.style.color = '#555';
             msgBox.textContent = '⏳ नंबर Google Sheet में save हो रहा है...';
             try {
-                const result = await apiRequest({ action: 'saveWhatsapp', vendorId: currentLoggedInShop, query: queryId, whatsapp: phone });
+                const result = await apiRequest({
+                    action: 'saveWhatsapp',
+                    vendorId: currentLoggedInShop,
+                    query: queryId,
+                    whatsapp: phone
+                });
                 if (!result.success) {
                     msgBox.style.color = 'red';
                     msgBox.textContent = result.message || 'नंबर save नहीं हुआ।';
                     return;
                 }
+
                 msgBox.style.color = 'green';
-                msgBox.textContent = '✅ नंबर Google Sheet में save हो गया।';
+                msgBox.textContent = '✅ नंबर Google Sheet में save हो गया। WhatsApp खोला जा रहा है...';
+
                 const waPhone = phone.length === 10 ? '91' + phone : phone;
-                const msg = `Namaste, Siddhant Accounting Services Dabra se aapka PAN card ka kaam safal ho gaya hai. (Query/Aadhar/Coupon: ${queryId}). Kripya apna slip/e-PAN prapt karein.`;
+                let msg = `Namaste, Siddhant Accounting Services Dabra se aapka PAN card ka kaam safal ho gaya hai.\n\n`;
+                msg += `Query/Coupon: ${queryId}\n\n`;
+
+                if (slipUrl && String(slipUrl).trim()) {
+                    msg += `📄 Slip Download:\n${String(slipUrl).trim()}\n\n`;
+                } else {
+                    msg += `📄 Slip: उपलब्ध नहीं है\n\n`;
+                }
+
+                if (epanUrl && String(epanUrl).trim()) {
+                    msg += `⭐ e-PAN PDF Download:\n${String(epanUrl).trim()}\n\n`;
+                } else {
+                    msg += `⭐ e-PAN: उपलब्ध नहीं है\n\n`;
+                }
+
+                msg += `धन्यवाद।\nSiddhant Accounting Services Dabra`;
+
                 window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
             } catch (err) {
                 console.error(err);
