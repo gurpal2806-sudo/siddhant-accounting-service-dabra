@@ -585,7 +585,7 @@
             currentShopName = shopName || id;
             document.getElementById('login-section').style.display = 'none';
             document.getElementById('vendor-panel').style.display = 'block';
-            document.getElementById('welcome-shop-name').innerHTML = 🙏 Welcome 🙏: ${escapeHtml(currentShopName)} (${escapeHtml(id)})`;
+            document.getElementById('welcome-shop-name').innerHTML =  `स्वागत है : ${escapeHtml(currentShopName)} (${escapeHtml(id)})`;
             document.getElementById('totalPanCount').innerHTML = count ?? 0;
             loadVendorLiveUpdates(id);
         }
