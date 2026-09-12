@@ -524,21 +524,25 @@
         }
 
         async function apiRequest(payload) {
+            const session = getSession();
+            const requestPayload = { ...(payload || {}) };
+            if (session && session.token) requestPayload.sessionToken = session.token;
             const response = await fetch(GOOGLE_SHEET_API, {
                 method: 'POST',
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify(requestPayload)
             });
             const text = await response.text();
             try { return JSON.parse(text); }
             catch { throw new Error('Google Sheet से सही response नहीं मिला।'); }
         }
 
-        function saveSession(role, id, shopName) {
+        function saveSession(role, id, shopName, token) {
             localStorage.setItem(SESSION_KEY, JSON.stringify({
                 role: role || 'vendor',
                 id: id,
                 shopName: shopName || id,
+                token: token || '',
                 lastActivity: Date.now()
             }));
             resetSessionTimer();
@@ -605,7 +609,7 @@
                     return;
                 }
 
-                saveSession(result.role || 'vendor', id, result.shopName || id);
+                saveSession(result.role || 'vendor', id, result.shopName || id, result.token || '');
                 errorBox.innerHTML = '';
 
                 if (result.role === 'admin') {
@@ -636,16 +640,22 @@
                 return;
             }
             try {
-                const result = await apiRequest({ action: 'login', vendorId: s.id, password: '__SESSION_RECHECK__' });
-                // Password दोबारा माँगने के बजाय session localStorage में रखा गया है।
-                // यहाँ केवल UI restore किया जाता है; वास्तविक login के समय server ने password check किया था।
-                showVendorPanel(s.id, s.shopName || s.id, 0);
-                loadVendorLiveUpdates(s.id);
+                const result = await apiRequest({ action: 'restoreSession', sessionToken: s.token });
+                if (!result.success) {
+                    vendorLogout(true);
+                    return;
+                }
+                saveSession(result.role || s.role, result.vendorId || s.id, result.shopName || s.shopName, s.token);
+                if (result.role === 'admin') {
+                    document.getElementById('login-section').style.display = 'none';
+                    showAdminPanel();
+                    loadAdminData();
+                    return;
+                }
+                showVendorPanel(result.vendorId || s.id, result.shopName || s.shopName || s.id, result.count ?? 0);
                 touchSession();
             } catch (_) {
-                showVendorPanel(s.id, s.shopName || s.id, 0);
-                loadVendorLiveUpdates(s.id);
-                touchSession();
+                vendorLogout(true);
             }
         }
 
