@@ -1,0 +1,20 @@
+{
+  "name": "Siddhant Accounting Services Dabra",
+  "short_name": "Siddhant Accounting",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0056b3",
+  "theme_color": "#0056b3",
+  "icons": [
+    {
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhYk-u_DEdE3PRREfAtMm4XEQXUZbaUfYKHZmTpI4OMt-UYQsOEtuSSCQN-MA-bMNLL3awzECWMFU0J4FVK0fdXpIiR4p7IO0VQ_oBf_SGhNhBEDnYOrsPgqDdrNKvfgp3ZOQp53-vcJ6kUm1_R_eeVSTvhj-lespxrliW_ejwzb0BTff2RSmzqz7zVFJs/s1600/176931.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhYk-u_DEdE3PRREfAtMm4XEQXUZbaUfYKHZmTpI4OMt-UYQsOEtuSSCQN-MA-bMNLL3awzECWMFU0J4FVK0fdXpIiR4p7IO0VQ_oBf_SGhNhBEDnYOrsPgqDdrNKvfgp3ZOQp53-vcJ6kUm1_R_eeVSTvhj-lespxrliW_ejwzb0BTff2RSmzqz7zVFJs/s1600/176931.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
