@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0056b3">
     <title>Siddhant Accounting Services Dabra</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
@@ -1031,5 +1033,16 @@
         ['click','keydown','input'].forEach(evt=>document.addEventListener(evt,()=>{if(getSession())touchSession();},{passive:true}));
         window.addEventListener('load',()=>{loadPublicData();restoreSession();});
     </script>
+    <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/sw.js').then(function(registration) {
+        console.log('PWA Service Worker Registered');
+      }).catch(function(err) {
+        console.log('PWA Registration Failed: ', err);
+      });
+    });
+  }
+</script>
 </body>
 </html>
