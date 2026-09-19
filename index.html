@@ -52,7 +52,7 @@
         #vendor-panel { display: none; scroll-margin-top: 20px; }
         
         /* Global Notice Bar */
-        .announcement-bar { background: #fff3cd; color: #856404; padding: 10px 15px; border: 1px solid #ffeeba; border-radius: 4px; margin-bottom: 25px; font-weight: 600; font-size: 14px; display: flex; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+        .announcement-bar { background: #fff3cd; color: #856404; padding: 10px 15px; border: 1px solid #ffeeba; border-radius: 4px; margin-bottom: 25px; font-weight: 600; font-size: 14px; display: fixed; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
         .announcement-bar span { background: #ffc107; color: #000; padding: 3px 8px; border-radius: 3px; font-size: 12px; margin-right: 12px; text-transform: uppercase; font-weight: bold; }
 
         .status-update-box { background: #d1ecf1; color: #0c5460; padding: 12px; border: 1px solid #bee5eb; border-radius: 6px; margin-bottom: 20px; font-size: 13px; }
@@ -493,7 +493,7 @@
                         <!-- Payment QR Box inside Lost PAN form -->
                         <div class="payment-box-inline">
                             <p style="font-size: 13px; color: #d9534f; font-weight: bold; margin-bottom: 5px;">💳 ₹100 भुगतान हेतु QR Code स्कैन करें</p>
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 290px; height:auto; max-width:100% height: 290px;">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 130px; height: 130px;">
                             <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm1" onchange="toggleBtn('paymentConfirm1', 'submitLostBtn')" style="width: 18px; height: 18px;"> 
@@ -545,7 +545,7 @@
                         <!-- Payment QR Box inside e-PAN form -->
                         <div class="payment-box-inline" style="border-color: #28a745;">
                             <p style="font-size: 13px; color: #28a745; font-weight: bold; margin-bottom: 5px;">💳 ₹80 भुगतान हेतु QR Code स्कैन करें</p>
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 110px; height: 110px;">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 130px; height: 130px;">
                             <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm2" onchange="toggleBtn('paymentConfirm2', 'submitEpanBtn')" style="width: 18px; height: 18px;"> 
@@ -603,7 +603,7 @@
                         <!-- Payment QR Box inside Surrender PAN form -->
                         <div class="payment-box-inline" style="border-color: #6f42c1;">
                             <p style="font-size: 13px; color: #6f42c1; font-weight: bold; margin-bottom: 5px;">💳 ₹400 भुगतान हेतु QR Code स्कैन करें</p>
-                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 110px; height: 110px;">
+                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgBLWF0LDlp5XbLykkgt3UQYnPIe5t84l0-wHl5sMHsf5VYTuAjhJeyIm4C0ycGF0d3nD2EqTKFORNqaAED0wwM0nTp8r6_YTvKsWD0YW38NYpT5uLrqc8zpapGmeFifAM_f26h8B4Gi6n6KulofoWNg6v_5B9ugfld0PF6N9BHSGnMDREQDlGlRObr7n0/s320/Screenshot_2026-09-10-22-56-14-21_49b96b5fbae0d12a18edc4a3afe0dfd9.jpg" alt="Payment QR" style="width: 130px; height: 130px;">
                             <p style="font-size: 11px; color: #666; margin-bottom: 8px;">UPI ID: <code>siddhantaccoun1dabra@ptyes</code></p>
                             <label style="display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-size: 14px; font-weight: bold; color: #333;">
                                 <input type="checkbox" id="paymentConfirm3" onchange="toggleBtn('paymentConfirm3', 'submitSurrenderBtn')" style="width: 18px; height: 18px;"> 
