@@ -20,6 +20,13 @@
         .menu-bar a:hover { background-color: #0056b3; }
         .menu-bar a.tally-menu { background-color: #ffc107; color: #000; }
         .menu-bar a.tally-menu:hover { background-color: #e0a800; }
+        .service-price-panel { display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+        .service-price-panel span { flex:1 1 130px; padding:8px 10px; border-radius:5px; font-size:13px; font-weight:700; }
+        .service-price-retailer { background:#fff3cd; color:#795500; border:1px solid #e6c75a; }
+        .service-price-vendor { background:#e8f5e9; color:#176b2c; border:1px solid #9ed6a8; }
+        .vendor-rate-private { display:none !important; }
+        body.vendor-authenticated .vendor-rate-private { display:block !important; }
+        .vendor-service-popup-only { display:none !important; }
 
         .container { max-width: 1100px; margin: 20px auto; padding: 0 15px; }
         .section-title { text-align: center; margin: 30px 0 20px; color: #0056b3; font-size: 22px; }
@@ -275,7 +282,6 @@
         <p>Contact Us : Mob 9575016023</p>
         <button class="top-login-btn" onclick="scrollToLogin()">🔐 वेंडर लॉगिन</button>
     </header>
-
     <!-- Menu Bar -->
     <div class="menu-bar">
         <a href="#" onclick="returnHome();return false;">🏠 होम (Home)</a>
@@ -284,6 +290,17 @@
         <a href="#enquiry">📞 संपर्क करें</a>
         <a href="#" onclick="openAdminLogin();return false;">🔐 Admin Control</a>
         <a href="#" class="tally-menu" onclick="alert('⚡ Tally Accounting Service: यह सेवा भविष्य के अपडेट में बहुत जल्द लाइव की जाएगी!')">📊 Tally Accounting Service (Coming Soon)</a>
+        <div id="vendorServiceMenu" style="display:none;position:relative;z-index:100010;text-align:center;">
+            <button type="button" onclick="openVendorServicesPopup()" style="background:#0056b3;color:#fff;border:0;padding:11px 20px;font-size:14px;font-weight:600;cursor:pointer;">🧾 Vendor Services ▾</button>
+            <div id="vendorServiceDropdown" style="display:none;position:absolute;z-index:100011;top:calc(100% + 6px);left:50%;transform:translateX(-50%);min-width:280px;max-width:92vw;max-height:70vh;overflow-y:auto;background:#003d82;border:2px solid #ffc107;border-radius:8px;box-shadow:0 12px 30px rgba(0,0,0,.4);text-align:left;"></div>
+        </div>
+    </div>
+
+    <div id="vendorServiceModal" style="display:none;position:fixed;inset:0;z-index:100012;background:rgba(0,0,0,.78);padding:18px;overflow:auto;">
+        <div style="position:relative;width:100%;max-width:900px;min-height:180px;margin:20px auto;background:#fff;border-radius:8px;padding:18px;box-shadow:0 12px 35px rgba(0,0,0,.45);">
+            <button type="button" onclick="closeVendorServiceModal()" aria-label="Close service" style="position:absolute;right:12px;top:10px;width:36px;height:36px;border:0;border-radius:50%;background:#b02a37;color:#fff;font-size:24px;line-height:1;cursor:pointer;">×</button>
+            <div id="vendorServiceModalContent"></div>
+        </div>
     </div>
 
     <div class="container">
@@ -329,6 +346,13 @@
         <button class="search-btn" onclick="addNoticeFromAdmin()">➕ Notice Add</button>
       </div>
     </div>
+        <div class="panel-section" style="background:#fff;border-color:#b8d4f5;">
+            <h3>📥 Downloads Management</h3>
+            <p style="font-size:12px;color:#555;margin-bottom:8px;">Download popup के button का नाम और link बदलें या नया button जोड़ें।</p>
+            <div id="adminDownloadManager"></div>
+            <button class="search-btn" type="button" onclick="addDownloadAdminRow()">➕ Add Download Button</button>
+            <button class="search-btn" type="button" onclick="saveDownloadManager()">💾 Save Downloads</button>
+        </div>
     <div class="panel-section" style="background:#fff;border-color:#b8d4f5;">
       <h3>🎉 Welcome Popup / Poster & 🖼️ Home Page Poster + Text</h3>
       <div class="service-form">
@@ -432,7 +456,7 @@
                 </div>
 
                 <!-- 1. SABSE UPAR: Search Portal -->
-                <div class="panel-section">
+                <div class="panel-section" id="vendorServiceSearch">
                     <h3>🔍 1. कूपन या नंबर सर्च करें (Live Search)</h3>
                     <p style="font-size: 13px; color: #555; margin-bottom: 8px;">Aadhaar / Coupon Number, Applicant Name या Mobile Number से रिकॉर्ड खोजें:</p>
                     <div class="search-row">
@@ -443,7 +467,7 @@
                 </div>
 
                 <!-- 2. USKE BAAD: UPI QR Code & Total Count -->
-                <div class="panel-section">
+                <div class="panel-section" id="vendorServicePayment">
                     <h3>💳 2. भुगतान एवं कुल रिकॉर्ड (Payment & Total Count)</h3>
                     <div class="flex-box">
                         <div class="upi-box">
@@ -458,7 +482,7 @@
                 </div>
 
                 <!-- 3. PAN FIND / LOST PAN CARD SERVICE SECTION (₹100 Charge) -->
-                <div class="panel-section" id="vendorServiceLostPan" style="border-color: #d9534f; background: #fffdfd;">
+                <div class="panel-section vendor-service-popup-only" id="vendorServiceLostPan" style="border-color: #d9534f; background: #fffdfd;">
                     <h3 style="color: #d9534f; border-color: #d9534f;">
                         <span class="vendor-service-title">🔍 3. Pan Find / Lost PAN Card Service</span>
                         <span class="price-badge lost">शुल्क: ₹100</span>
@@ -506,7 +530,7 @@
                 </div>
 
                 <!-- 4. E-PAN DOWNLOAD SERVICE SECTION (₹80 Charge) -->
-                <div class="panel-section" id="vendorServiceEpan" style="border-color: #28a745; background: #f4faf4;">
+                <div class="panel-section vendor-service-popup-only" id="vendorServiceEpan" style="border-color: #28a745; background: #f4faf4;">
                     <h3 style="color: #28a745; border-color: #28a745;">
                         <span class="vendor-service-title">⭐ 4. e-PAN Download Service</span>
                         <span class="price-badge">शुल्क: ₹80</span>
@@ -558,7 +582,7 @@
                 </div>
 
                 <!-- 5. SURRENDER PAN CARD SERVICE SECTION (₹400 Charge) -->
-                <div class="panel-section" id="vendorServiceSurrender" style="border-color: #6f42c1; background: #fbf9ff;">
+                <div class="panel-section vendor-service-popup-only" id="vendorServiceSurrender" style="border-color: #6f42c1; background: #fbf9ff;">
                     <h3 style="color: #6f42c1; border-color: #6f42c1;">
                         <span class="vendor-service-title">🚫 5. Surrender PAN Card Service</span>
                         <span class="price-badge surrender">शुल्क: ₹400</span>
@@ -617,7 +641,7 @@
 
                 <!-- 6. ADMIN-MANAGED VENDOR SERVICES -->
                 <section id="dynamicFormsVendor" class="panel-section" style="display:none;background:#fff;border-color:#b8d4f5;">
-                    <h3>📝 6. Online Services / Forms</h3>
+                    <h3 style="display:none;">📝 6. Online Services / Forms</h3>
                     <div id="dynamicFormsVendorList"></div>
                 </section>
 
@@ -839,18 +863,6 @@
             document.getElementById('login-section').scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
 
-        // Login के बाद Vendor Dashboard को तुरंत viewport के बीच/मुख्य area में दिखाएँ।
-        // इससे dashboard footer के पास छिपा हुआ नहीं लगेगा।
-        function scrollToVendorDashboard() {
-            const panel = document.getElementById('vendor-panel');
-            if (!panel) return;
-            requestAnimationFrame(() => {
-                setTimeout(() => {
-                    panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }, 80);
-            });
-        }
-
         async function apiRequest(payload) {
             const response = await fetch(GOOGLE_SHEET_API, {
                 method: 'POST',
@@ -867,15 +879,22 @@
             box.innerHTML=''; if(!id||!pass){box.innerHTML='कृपया Vendor ID और Password दोनों दर्ज करें!';return;}
             if(id.toLowerCase()==='demo' && pass==='demo123'){
                 sessionToken='demo-local'; saveSession('vendor','demo','Demo Vendor',sessionToken);
-                currentLoggedInShop='demo'; currentShopName='Demo Vendor'; window.__loggedInVendorVoiceNotice='';
-                document.getElementById('login-section').style.display='none'; document.getElementById('vendor-panel').style.display='block';
+                currentLoggedInShop='demo'; currentShopName='Demo Vendor'; window.__loggedInVendorVoiceNotice=''; document.body.classList.add('vendor-authenticated');
+                document.getElementById('login-section').style.display='none'; document.getElementById('vendor-panel').style.display='block'; renderVendorServiceMenu(window.__vendorServiceItems||[], window.__dynamicFormItems||[]);
                 document.getElementById('welcome-shop-name').innerHTML='स्वागत है: Demo Vendor (demo)';
-                document.getElementById('totalPanCount').textContent='0'; box.innerHTML=''; loadVendorLiveUpdates('demo'); showVendorWelcomePopup(); return;
+                document.getElementById('totalPanCount').textContent='0'; box.innerHTML=''; window.scrollTo({top:0,left:0,behavior:'auto'}); loadVendorLiveUpdates('demo'); return;
             }
             box.innerHTML='⏳ Login check हो रहा है...';
             try{const r=await apiRequest({action:'login',vendorId:id,password:pass});
                 if(!r.success){box.innerHTML=escapeHtml(r.message||'Login असफल');return;}
                 if(r.role==='admin'){sessionToken=r.token||''; saveSession('admin','admin','Admin',sessionToken); box.innerHTML=''; showAdminPanel(); loadAdminData(); return;}
+                if(r.token){
+                    sessionToken=r.token; saveSession('vendor',r.vendorId||id,r.shopName||id,sessionToken);
+                    currentLoggedInShop=r.vendorId||id; currentShopName=r.shopName||id; window.__loggedInVendorVoiceNotice=(window.__vendorVoiceNoticeMap&&window.__vendorVoiceNoticeMap[currentLoggedInShop])||''; document.body.classList.add('vendor-authenticated');
+                    document.getElementById('login-otp-box').style.display='none'; document.getElementById('login-section').style.display='none'; document.getElementById('vendor-panel').style.display='block'; renderVendorServiceMenu(window.__vendorServiceItems||[], window.__dynamicFormItems||[]);
+                    document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;
+                    document.getElementById('totalPanCount').textContent=r.count??0; box.innerHTML=''; window.scrollTo({top:0,left:0,behavior:'auto'}); loadVendorLiveUpdates(currentLoggedInShop); return;
+                }
                 document.getElementById('login-otp-box').style.display='block'; document.getElementById('loginOtp').value=''; document.getElementById('loginOtp').focus();
                 box.innerHTML='<span style="color:green;">✅ '+escapeHtml(r.message||'Email पर OTP भेज दिया गया है।')+'</span>';
             }catch(e){console.error(e);box.innerHTML='❌ Google Sheet से connection नहीं हो पाया।';}
@@ -909,9 +928,7 @@
                         <h3 style="color:#123b63;border-color:#e09b2d;">📥 Downloads</h3>
                         <p style="font-size:13px;color:#526b80;margin-bottom:14px;">आवश्यक PAN forms डाउनलोड करने के लिए नीचे दिए गए विकल्प चुनें।</p>
                         <div class="dl-row" style="display:flex;flex-direction:column;gap:9px;">
-                            <a href="https://tinpan.proteantech.in/downloads/pan/download/Form%2093.pdf" target="_blank" rel="noopener" class="dl-btn pdf-btn">New PAN Form</a>
-                            <a href="https://tinpan.proteantech.in/downloads/pan/download/PAN%20CR%20individual.pdf" target="_blank" rel="noopener" class="dl-btn pdf-btn">Correction Form</a>
-                            <a href="https://tinpan.proteantech.in/downloads/pan/Annexure%20A_Prescribed%20format%20of%20Certificate%20issued%20for%20Indetity%20&%20Address%20by%20MPMLA%20Municipal%20Coun.pdf" target="_blank" rel="noopener" class="dl-btn pdf-btn">Annexure Form</a>
+                            ${(window.__downloadItems||[]).map(item=>`<a href="${escapeAttr(safeUrl(item.url)||item.url||'#')}" target="_blank" rel="noopener" class="dl-btn pdf-btn">${escapeHtml(item.name||'Download')}</a>`).join('')}
                         </div>
                     </div>
                 </div>`;
@@ -1091,10 +1108,10 @@
             try{const r=await apiRequest({action:'verifyOtp',vendorId:id,otp:otp,mode:'login'});
                 if(!r.success){box.innerHTML='<span style="color:red;">'+escapeHtml(r.message||'OTP गलत है।')+'</span>';return;}
                 sessionToken=r.token||''; saveSession('vendor',r.vendorId||id,r.shopName||id,sessionToken);
-                currentLoggedInShop=r.vendorId||id; currentShopName=r.shopName||id; window.__loggedInVendorVoiceNotice=(window.__vendorVoiceNoticeMap&&window.__vendorVoiceNoticeMap[currentLoggedInShop])||'';
-                document.getElementById('login-section').style.display='none'; document.getElementById('vendor-panel').style.display='block';
+                currentLoggedInShop=r.vendorId||id; currentShopName=r.shopName||id; window.__loggedInVendorVoiceNotice=(window.__vendorVoiceNoticeMap&&window.__vendorVoiceNoticeMap[currentLoggedInShop])||''; document.body.classList.add('vendor-authenticated');
+                document.getElementById('login-section').style.display='none'; document.getElementById('vendor-panel').style.display='block'; renderVendorServiceMenu(window.__vendorServiceItems||[], window.__dynamicFormItems||[]);
                 document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;
-                document.getElementById('totalPanCount').textContent=r.count??0; box.innerHTML=''; loadVendorLiveUpdates(currentLoggedInShop); showVendorWelcomePopup(); setTimeout(()=>showVendorVoiceNoticeFromSettings(),650);
+                document.getElementById('totalPanCount').textContent=r.count??0; box.innerHTML=''; window.scrollTo({top:0,left:0,behavior:'auto'}); loadVendorLiveUpdates(currentLoggedInShop);
             }catch(e){console.error(e);box.innerHTML='❌ OTP verify नहीं हो पाया।';}
         }
 
@@ -1123,7 +1140,10 @@
 
         function vendorLogout(auto=false) {
             if(sessionTimer){clearTimeout(sessionTimer);sessionTimer=null;} localStorage.removeItem(SESSION_KEY); if('speechSynthesis' in window)window.speechSynthesis.cancel();
+            document.body.classList.remove('vendor-authenticated');
+            closeVendorServiceModal();
             document.getElementById('vendor-panel').style.display = 'none';
+            const serviceMenu=document.getElementById('vendorServiceMenu'); if(serviceMenu)serviceMenu.style.display='none';
             document.getElementById('login-section').style.display = 'block';
             document.getElementById('vendorId').value = '';
             document.getElementById('vendorPass').value = '';
@@ -1155,8 +1175,8 @@
 
                 const r = result.record;
                 const slip = safeUrl(r.slip);
-                const epan = safeUrl(r.epan);
-                const annexure = safeUrl(r.annexure);
+                const epan = documentViewUrl(r.epan);
+                const annexure = documentViewUrl(r.annexure);
                 const savedWa = r.customerMobile || r.whatsapp || '';
                 if (r.adminNotice) showVendorAdminNotice(r.adminNotice);
                 resultArea.innerHTML = `
@@ -1174,13 +1194,11 @@
                                 ${annexure ? `<a href="${annexure}" target="_blank" rel="noopener" class="dl-btn annexure">📑 Annexure A Form Download</a>` : `<span class="dl-btn annexure" style="background:#aaa;">📑 Annexure A उपलब्ध नहीं</span>`}
                             </div>
                             <div class="wa-send-section" style="margin-bottom:10px;">
-                                ${slip && savedWa ? `<button class="wa-send-btn" onclick="sendCustomerWhatsApp('${escapeJs(r.coupon)}','slip','${escapeJs(slip)}','${escapeJs(r.applicantName||'')}','${escapeJs(r.serviceType||'')}','${escapeJs(r.shopName||currentShopName||currentLoggedInShop)}')">📲 Slip Status WhatsApp भेजें</button>` : ''}
-                                ${epan && savedWa ? `<button class="wa-send-btn" style="background:#6f42c1;margin-top:6px;" onclick="sendCustomerWhatsApp('${escapeJs(r.coupon)}','epan','${escapeJs(epan)}','${escapeJs(r.applicantName||'')}','${escapeJs(r.serviceType||'')}','${escapeJs(r.shopName||currentShopName||currentLoggedInShop)}')">📲 e-PAN WhatsApp भेजें</button>` : ''}
                                 ${annexure && savedWa ? `<button class="wa-send-btn" style="background:#b02a37;margin-top:6px;" onclick="sendCustomerWhatsApp('${escapeJs(r.coupon)}','annexure','${escapeJs(annexure)}','${escapeJs(r.applicantName||'')}','${escapeJs(r.serviceType||'')}','${escapeJs(r.shopName||currentShopName||currentLoggedInShop)}')">📲 Objection WhatsApp भेजें</button>` : ''}
                             </div>
                             <div class="wa-send-section">
                                 <input type="tel" id="customerWaPhone" value="${escapeAttr(savedWa)}" placeholder="ग्राहक का मोबाइल नंबर (10 या 12 अंक)" inputmode="numeric" maxlength="12">
-                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}')">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
+                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}', '${escapeJs(slip)}', '${escapeJs(epan)}')">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
                                 <div id="waSaveMsg" style="font-size:12px;margin-top:6px;text-align:center;"></div>
                             </div>
                         </div>
@@ -1210,13 +1228,15 @@
             if(phone.length===10)phone='91'+phone;
             let text='';
             const office=shopName||'हमारे सेवा केंद्र';
-            if(type==='slip') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} की application सफलतापूर्वक कर दी गई है। कृपया ${office} की shop पर आकर आगे की प्रक्रिया पूरी करें। धन्यवाद।`;
-            if(type==='epan') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} का e-PAN आ गया है। कृपया ${office} की shop पर आकर अपना e-PAN प्राप्त करें। धन्यवाद।`;
-            if(type==='annexure') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} application objection में आ गई है। कृपया ${office} की shop पर आकर Admin से संपर्क करें। धन्यवाद।`;
+            const documentLink=String(link||'').trim();
+            if(type==='slip') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} की application सफलतापूर्वक कर दी गई है।\n\nSlip Link:\n${documentLink||'अभी उपलब्ध नहीं है'}\n\nकृपया ${office} की shop पर आकर आगे की प्रक्रिया पूरी करें। धन्यवाद।`;
+            if(type==='epan') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} का e-PAN आ गया है।\n\ne-PAN Link:\n${documentLink||'अभी उपलब्ध नहीं है'}\n\nकृपया ${office} की shop पर आकर अपना e-PAN प्राप्त करें। धन्यवाद।`;
+            if(type==='annexure') text=`नमस्ते ${applicant||''}, आपकी ${service||'service'} application objection में आ गई है।\n\nAnnexure Link:\n${documentLink||'अभी उपलब्ध नहीं है'}\n\nकृपया ${office} की shop पर आकर Admin से संपर्क करें। धन्यवाद।`;
+            if(!text)return;
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`,'_blank');
         }
 
-        async function sendSlipToCustomerWhatsApp(queryId) {
+        async function sendSlipToCustomerWhatsApp(queryId, slipUrl, epanUrl) {
             const input = document.getElementById('customerWaPhone');
             const phone = (input.value || '').replace(/\D/g, '');
             const msgBox = document.getElementById('waSaveMsg');
@@ -1243,7 +1263,10 @@
                 msgBox.style.color = 'green';
                 msgBox.textContent = '✅ नंबर Google Sheet में save हो गया।';
                 const waPhone = phone.length === 10 ? '91' + phone : phone;
-                const msg = `Namaste, Siddhant Accounting Services Dabra se aapka PAN card ka kaam safal ho gaya hai. (Query/Coupon: ${queryId}). Kripya apna slip/e-PAN prapt karein.`;
+                const slipText = slipUrl ? slipUrl : 'अभी उपलब्ध नहीं है';
+                const epanText = epanUrl ? epanUrl : 'अभी उपलब्ध नहीं है';
+                const vendorShopName = String(currentShopName || currentLoggedInShop || 'Siddhant Accounting Services Dabra').trim();
+                const msg = `*Siddhant Accounting Services Dabra*\n\nनमस्ते\nआपका PAN Card काम सफलतापूर्वक पूरा हो गया है।\n\n*Vendor Shop:* ${vendorShopName}\n*Query / Coupon:* ${queryId}\n\n*Slip Download:*\n${slipText}\n\n*e-PAN PDF:*\n${epanText}\n\nकृपया ऊपर दिए गए link पर click करके document खोलें।\n\nधन्यवाद\n*Siddhant Accounting Services Dabra*`;
                 window.open(`https://wa.me/${waPhone}?text=${encodeURIComponent(msg)}`, '_blank');
             } catch (err) {
                 console.error(err);
@@ -1308,9 +1331,10 @@
             }
             if(d.services&&d.services.length){
               const g=document.getElementById('servicesGrid');
-              if(g)g.innerHTML=d.services.map(x=>`<div class="service-card">${x.image?`<img src="${escapeAttr(safeUrl(x.image))}" alt="" style="width:100%;max-height:150px;object-fit:cover;border-radius:5px;margin-bottom:10px;">`:''}<div><h3>${escapeHtml(x.icon||'📌')} ${escapeHtml(x.name)}</h3><div class="price">${escapeHtml(x.price)}</div><p>${escapeHtml(x.description)}</p><div class="details-box"><strong>डॉक्यूमेंट्स/विशेषताएं:</strong> ${escapeHtml(x.details)}</div></div><a href="#enquiry" class="btn">संपर्क करें</a></div>`).join('');
+              if(g)g.innerHTML=d.services.map(x=>`<div class="service-card">${x.image?`<img src="${escapeAttr(safeUrl(x.image))}" alt="" style="width:100%;max-height:150px;object-fit:cover;border-radius:5px;margin-bottom:10px;">`:''}<div><h3>${escapeHtml(x.icon||'📌')} ${escapeHtml(x.name)}</h3><div class="service-price-panel"><span class="service-price-retailer">Retailer Rate: ${escapeHtml(x.retailerPrice||x.price||'')}</span><span class="service-price-vendor vendor-rate-private">Vendor Rate: ${escapeHtml(x.vendorPrice||x.price||'')}</span></div><p>${escapeHtml(x.description)}</p><div class="details-box"><strong>डॉक्यूमेंट्स/विशेषताएं:</strong> ${escapeHtml(x.details)}</div></div><a href="#enquiry" class="btn">संपर्क करें</a></div>`).join('');
             }
             const st=d.settings||{}; const logoUrl=safeUrl(st.CompanyLogo||''); const companyLogo=document.getElementById('companyLogo'); if(companyLogo&&logoUrl)companyLogo.src=logoUrl; const vendorLogo=document.getElementById('vendorCompanyLogo'); if(vendorLogo){if(logoUrl){vendorLogo.src=logoUrl;vendorLogo.style.display='block';}else{vendorLogo.removeAttribute('src');vendorLogo.style.display='none';}} const adminLogoPreview=document.getElementById('adminCompanyLogoPreview'); if(adminLogoPreview)adminLogoPreview.src=logoUrl||(companyLogo?companyLogo.src:'');
+            let downloadItems=[]; try{downloadItems=JSON.parse(st.DownloadLinks||'[]');}catch(_){downloadItems=[];} if(!Array.isArray(downloadItems)||!downloadItems.length)downloadItems=[{name:'New PAN Form',url:'https://tinpan.proteantech.in/downloads/pan/download/Form%2093.pdf'},{name:'Correction Form',url:'https://tinpan.proteantech.in/downloads/pan/download/PAN%20CR%20individual.pdf'},{name:'Annexure Form',url:'https://tinpan.proteantech.in/downloads/pan/Annexure%20A_Prescribed%20format%20of%20Certificate%20issued%20for%20Indetity%20&%20Address%20by%20MPMLA%20Municipal%20Coun.pdf'}]; window.__downloadItems=downloadItems;
             const welcomeText=String(st.WelcomePopupText||'').trim() || '🙏 Siddhant Accounting Services Dabra में आपका हार्दिक स्वागत है\n🌸 आपका दिन मंगलमय हो।\n💐 आपका कार्य सफल एवं शुभ हो।'; window.__welcomeVoiceText=String(st.WelcomeVoiceText||'').trim()||welcomeText.replace(/\n/g,' ');
             const welcomeImg=safeUrl(st.WelcomePopupImage||'');
             const popup=document.getElementById('adminWelcomePopup'); const popupText=document.getElementById('publicWelcomePopupText'); const popupImg=document.getElementById('publicWelcomePopupImage');
@@ -1325,7 +1349,7 @@
             const homeActive=String(st.HomePosterActive||'ON').toUpperCase()==='ON';
             const homeText=String(st.HomePosterText||'').trim(); const homeImg=safeUrl(st.HomePosterImage||'');
             renderManagedPoster('adminHomePosterPublic', homeText, homeImg, false, homeActive);
-            renderManagedPoster('vendorHomePoster', homeText, homeImg, true, homeActive); applyVendorServiceSettings(d.vendorServices||[]); renderDynamicFormsHome(d.dynamicForms||[]);
+            renderManagedPoster('vendorHomePoster', homeText, homeImg, true, homeActive); applyVendorServiceSettings(d.vendorServices||[]); renderDynamicFormsHome(d.dynamicForms||[]); window.__vendorServiceItems=d.vendorServices||[]; window.__dynamicFormItems=d.dynamicForms||[]; if(currentLoggedInShop)renderVendorServiceMenu(window.__vendorServiceItems,window.__dynamicFormItems);
           }catch(e){console.error(e);}
         }
 
@@ -1358,10 +1382,10 @@
             setWelcomeOverlayState(false);
         }
         let adminDataCache={};
-        async function openAdminEditor(){await loadAdminData();}
+        async function openAdminEditor(){await loadAdminData();renderAdminDownloadManager();}
         function openAdminLogin(){const m=document.getElementById('admin-login-modal');m.style.display='flex';document.getElementById('adminLoginId').focus();}
         function closeAdminLogin(){document.getElementById('admin-login-modal').style.display='none';document.getElementById('admin-login-error').innerHTML='';}
-        async function adminLogin(){const id=document.getElementById('adminLoginId').value.trim(),pass=document.getElementById('adminLoginPass').value,box=document.getElementById('admin-login-error');if(!id||!pass){box.textContent='Admin ID और Password दोनों डालें।';return;}box.textContent='⏳ Login हो रहा है...';try{const r=await apiRequest({action:'login',vendorId:id,password:pass});if(!r.success||r.role!=='admin'){box.textContent=r.message||'Admin login असफल।';return;}sessionToken=r.token||'';localStorage.setItem('sas_admin_token',sessionToken);closeAdminLogin();showAdminPanel();loadAdminData();}catch(e){box.textContent='❌ Admin login connection error।';}}
+        async function adminLogin(){const id=document.getElementById('adminLoginId').value.trim(),pass=document.getElementById('adminLoginPass').value,box=document.getElementById('admin-login-error');if(!id||!pass){box.textContent='Admin ID और Password दोनों डालें।';return;}box.textContent='⏳ Login हो रहा है...';try{const r=await apiRequest({action:'login',vendorId:id,password:pass});if(!r.success||r.role!=='admin'){box.textContent=r.message||'Admin login असफल।';return;}sessionToken=r.token||'';localStorage.setItem('sas_admin_token',sessionToken);closeAdminLogin();showAdminPanel();loadAdminData().then(renderAdminDownloadManager);}catch(e){box.textContent='❌ Admin login connection error।';}}
         function showAdminPanel(){document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='none';const panel=document.getElementById('admin-panel');panel.style.display='block';requestAnimationFrame(()=>setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'center'}),80));}
         async function loadAdminData(){try{const r=await apiRequest({action:'adminData',sessionToken:sessionToken});if(!r.success){alert(r.message||'Admin data load नहीं हुआ');return;}adminDataCache=r.data||{};const sm={};(adminDataCache['SiteSettings']||[]).slice(1).forEach(r=>{if(r[0])sm[String(r[0])]=r[1]||'';});adminDataCache['SiteSettingsMap']=sm;renderAdminStats();renderAdminVendorStats();renderAdminServiceStats();renderAdminServiceManager();renderAdminVendorServiceManager();loadAdminSettings();renderVendorVoiceNoticeList();renderDynamicFormManager();const sel=document.getElementById('adminSheetSelect');sel.innerHTML=Object.keys(adminDataCache).map(n=>`<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join('');loadAdminSheet();}catch(e){console.error(e);alert('Admin data load नहीं हुआ।');}}
         function renderAdminStats(){const v=adminDataCache['VendorData']||[],vs=adminDataCache['Vendors']||[];const total=Math.max(0,v.length-1);const active=vs.length>1?vs.slice(1).filter(r=>String(r[3]||'').trim().toLowerCase()==='active').length:0;document.getElementById('adminStats').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><div class="count-box"><h4>Total Requests</h4><div class="count-number">${total}</div></div><div class="count-box"><h4>Active Vendors</h4><div class="count-number">${active}</div></div><div class="count-box"><h4>Total Vendors</h4><div class="count-number">${Math.max(0,vs.length-1)}</div></div></div>`;}
@@ -1376,7 +1400,7 @@
             const pay=f.payment||{};
             const payOn=String(pay.enabled||'OFF').toUpperCase()==='ON';
             const amount=escapeHtml(pay.amount||'');
-            return `<div class="form-container dynamic-vendor-service"><h3>🧾 ${escapeHtml(f.name||f.formId)}</h3>${f.instructions?`<p style="color:#555;">${escapeHtml(f.instructions)}</p>`:''}<form onsubmit="submitDynamicForm(event,'${escapeAttr(f.formId)}')" enctype="multipart/form-data">${fields.map((x,i)=>dynamicFieldHtml(x,i,f.formId)).join('')}${payOn?`<div style="margin-top:14px;padding:12px;border:1px solid #cbb8e8;border-radius:8px;background:#f8f4ff;"><div style="font-weight:700;color:#6f42c1;">💳 Payment ${amount?'₹'+amount:''}</div>${pay.instructions?`<div style="font-size:13px;margin:6px 0;">${escapeHtml(pay.instructions)}</div>`:''}${pay.qr?`<img src="${escapeAttr(safeUrl(pay.qr))}" alt="Payment QR" style="width:160px;height:160px;object-fit:contain;display:block;margin:8px auto;">`:''}${pay.upi?`<div style="text-align:center;font-size:13px;">UPI ID: <b>${escapeHtml(pay.upi)}</b></div>`:''}${pay.link?`<div style="text-align:center;margin:8px 0;"><a class="btn" href="${escapeAttr(safeUrl(pay.link))}" target="_blank" rel="noopener" style="background:#6f42c1;">💳 Pay Now</a></div>`:''}${String(pay.confirmation||'OFF').toUpperCase()==='ON'?`<label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-top:8px;"><input type="checkbox" name="__paymentConfirmed" value="YES" style="margin-top:3px;"> ${escapeHtml(pay.confirmationText||'मैंने पेमेंट कर दिया है।')}</label>`:''}</div>`:''}<button type="submit" class="submit-service-btn">📤 Form Submit करें</button><div id="dynamicMsg_${escapeAttr(f.formId)}" style="margin-top:8px;font-weight:700;"></div></form></div>`;
+            return `<div id="dynamicService_${escapeAttr(f.formId)}" class="form-container dynamic-vendor-service"><h3>🧾 ${escapeHtml(f.name||f.formId)}</h3>${f.instructions?`<p style="color:#555;">${escapeHtml(f.instructions)}</p>`:''}<form onsubmit="submitDynamicForm(event,'${escapeAttr(f.formId)}')" enctype="multipart/form-data">${fields.map((x,i)=>dynamicFieldHtml(x,i,f.formId)).join('')}${payOn?`<div style="margin-top:14px;padding:12px;border:1px solid #cbb8e8;border-radius:8px;background:#f8f4ff;"><div style="font-weight:700;color:#6f42c1;">💳 Payment ${amount?'₹'+amount:''}</div>${pay.instructions?`<div style="font-size:13px;margin:6px 0;">${escapeHtml(pay.instructions)}</div>`:''}${pay.qr?`<img src="${escapeAttr(safeUrl(pay.qr))}" alt="Payment QR" style="width:160px;height:160px;object-fit:contain;display:block;margin:8px auto;">`:''}${pay.upi?`<div style="text-align:center;font-size:13px;">UPI ID: <b>${escapeHtml(pay.upi)}</b></div>`:''}${pay.link?`<div style="text-align:center;margin:8px 0;"><a class="btn" href="${escapeAttr(safeUrl(pay.link))}" target="_blank" rel="noopener" style="background:#6f42c1;">💳 Pay Now</a></div>`:''}${String(pay.confirmation||'OFF').toUpperCase()==='ON'?`<label style="display:flex;gap:8px;align-items:flex-start;font-size:13px;margin-top:8px;"><input type="checkbox" name="__paymentConfirmed" value="YES" style="margin-top:3px;"> ${escapeHtml(pay.confirmationText||'मैंने पेमेंट कर दिया है।')}</label>`:''}</div>`:''}<button type="submit" class="submit-service-btn">📤 Form Submit करें</button><div id="dynamicMsg_${escapeAttr(f.formId)}" style="margin-top:8px;font-weight:700;"></div></form></div>`;
           }).join('');
         }
         function dynamicFieldHtml(f,i,formId){const id='df_'+formId+'_'+i, name=String(f.name||('Field '+(i+1))), type=String(f.type||'text').toLowerCase(), req=f.required?'required':''; const label=`<label>${escapeHtml(name)}${f.required?' *':''}</label>`; if(type==='textarea')return `<div class="form-group">${label}<textarea id="${id}" name="${escapeAttr(f.key||name)}" rows="3" ${req} placeholder="${escapeAttr(f.placeholder||'')}"></textarea></div>`; if(type==='select'||type==='dropdown'){const opts=Array.isArray(f.options)?f.options:[];return `<div class="form-group">${label}<select id="${id}" name="${escapeAttr(f.key||name)}" ${req}><option value="">Select करें</option>${opts.map(o=>`<option value="${escapeAttr(o)}">${escapeHtml(o)}</option>`).join('')}</select></div>`;} if(type==='file'||type==='upload')return `<div class="form-group">${label}<input id="${id}" type="file" name="${escapeAttr(f.key||name)}" ${req}></div>`; const inputType=['number','date','tel','email'].includes(type)?type:'text'; return `<div class="form-group">${label}<input id="${id}" type="${inputType}" name="${escapeAttr(f.key||name)}" ${req} placeholder="${escapeAttr(f.placeholder||'')}"></div>`;}
@@ -1396,9 +1420,17 @@
         function deleteServiceAdminRow(index){const d=adminDataCache['Services']||[];if(index<1||index>=d.length)return;if(!confirm('इस service को delete करना है? OK करने पर Save Services दबाएं।'))return;d.splice(index,1);adminDataCache['Services']=d;renderAdminServiceManager();}
         function addServiceAdminRow(){let d=adminDataCache['Services']||[];if(!d.length)d=[['Service ID','Icon','Service Name','Price','Description','Details','Image','Order','Active']];const row=new Array(d[0].length).fill('');row[0]='S'+Date.now();row[7]=String(Math.max(1,d.length));row[8]='ON';d.push(row);adminDataCache['Services']=d;renderAdminServiceManager();}
         async function saveServiceManager(){const d=adminDataCache['Services']||[];document.querySelectorAll('#adminServiceManager input').forEach(inp=>{const r=+inp.dataset.sr,c=+inp.dataset.sc;if(d[r-1])d[r-1][c-1]=inp.value;});try{const r=await apiRequest({action:'adminSheetSave',sessionToken,sheetName:'Services',data:d});alert(r.message||'Services saved');if(r.success)loadAdminData();}catch(e){alert('Services save नहीं हुआ।');}}
-        function renderAdminVendorServiceManager(){let d=adminDataCache['VendorServices']||[];const box=document.getElementById('adminVendorServiceManager');if(!box)return;if(!d.length)d=[['Service ID','Service Name','Price','Active','Order'],['lostPan','Pan Find / Lost PAN Card Service','100','ON','1'],['epan','e-PAN Download Service','80','ON','2'],['surrender','Surrender PAN Card Service','400','ON','3']];adminDataCache['VendorServices']=d;const header=d[0];box.innerHTML='<div style="overflow:auto;"><table style="border-collapse:collapse;width:100%;font-size:12px;"><tr>'+header.map(x=>`<th style="border:1px solid #ccc;padding:6px;background:#eef6ff;">${escapeHtml(x)}</th>`).join('')+'</tr>'+d.slice(1).map((r,i)=>{const row=r.slice();while(row.length<header.length)row.push('');return `<tr>${row.map((x,j)=>`<td style="border:1px solid #ccc;padding:4px;"><input data-vsr="${i+2}" data-vsc="${j+1}" value="${escapeAttr(x)}" style="min-width:110px;width:100%;padding:5px;"></td>`).join('')}</tr>`}).join('')+'</table></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button class="search-btn" type="button" onclick="saveVendorServiceManager()">💾 Save Vendor Services</button><button class="search-btn" type="button" style="background:#198754;" onclick="openDynamicFormEditor()">➕ Add Service Form</button></div>';}
+        function renderAdminVendorServiceManager(){let d=adminDataCache['VendorServices']||[];const box=document.getElementById('adminVendorServiceManager');if(!box)return;if(d.length<2)d=[['Service ID','Service Name','Price','Active','Order'],['lostPan','Pan Find / Lost PAN Card Service','100','ON','1'],['epan','e-PAN Download Service','80','ON','2'],['surrender','Surrender PAN Card Service','400','ON','3']];adminDataCache['VendorServices']=d;const header=d[0];box.innerHTML='<div style="overflow:auto;"><table style="border-collapse:collapse;width:100%;font-size:12px;"><tr>'+header.map(x=>`<th style="border:1px solid #ccc;padding:6px;background:#eef6ff;">${escapeHtml(x)}</th>`).join('')+'<th style="border:1px solid #ccc;padding:6px;background:#eef6ff;">Action</th></tr>'+d.slice(1).map((r,i)=>{const row=r.slice();while(row.length<header.length)row.push('');return `<tr>${row.map((x,j)=>`<td style="border:1px solid #ccc;padding:4px;"><input data-vsr="${i+2}" data-vsc="${j+1}" value="${escapeAttr(x)}" style="min-width:110px;width:100%;padding:5px;"></td>`).join('')}<td style="border:1px solid #ccc;padding:4px;"><button type="button" onclick="deleteVendorServiceRow(${i+1})">🗑️ Delete</button></td></tr>`}).join('')+'</table></div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button class="search-btn" type="button" onclick="addVendorServiceRow()">➕ Add Service</button><button class="search-btn" type="button" onclick="saveVendorServiceManager()">💾 Save Vendor Services</button><button class="search-btn" type="button" style="background:#198754;" onclick="openDynamicFormEditor()">➕ Add Service Form</button></div>';}
+        function addVendorServiceRow(){const d=adminDataCache['VendorServices']||[];if(!d.length)return;const row=new Array(d[0].length).fill('');row[0]='service_'+Date.now();row[3]='ON';row[4]=String(d.length);d.push(row);adminDataCache['VendorServices']=d;renderAdminVendorServiceManager();}
+        function deleteVendorServiceRow(index){const d=adminDataCache['VendorServices']||[];if(index<1||index>=d.length)return;if(!confirm('इस vendor service को हटाना है? फिर Save Vendor Services दबाएं।'))return;d.splice(index,1);adminDataCache['VendorServices']=d;renderAdminVendorServiceManager();}
         async function saveVendorServiceManager(){const d=adminDataCache['VendorServices']||[];document.querySelectorAll('#adminVendorServiceManager input').forEach(inp=>{const r=+inp.dataset.vsr,c=+inp.dataset.vsc;if(d[r-1])d[r-1][c-1]=inp.value;});try{const r=await apiRequest({action:'adminSheetSave',sessionToken,sheetName:'VendorServices',data:d});if(!r.success&&/अनुमति|Unknown action|unknown action/i.test(String(r.message||''))){alert('Apps Script का पुराना version चल रहा है। Code.js paste करके नया deployment करें।');return;}alert(r.message||'Vendor services saved');if(r.success){await loadAdminData();await loadPublicData();}}catch(e){alert('Vendor services save नहीं हुईं। पहले updated Code.js deploy करें।');}}
         function applyVendorServiceSettings(items){if(!Array.isArray(items)||!items.length)return;const map={};items.forEach(x=>{map[String(x.id||'')]=x;});[['lostPan','vendorServiceLostPan'],['epan','vendorServiceEpan'],['surrender','vendorServiceSurrender']].forEach(pair=>{const item=map[pair[0]],section=document.getElementById(pair[1]);if(!item||!section)return;section.style.display=String(item.active||'ON').toUpperCase()==='ON'?'block':'none';const title=section.querySelector('.vendor-service-title');if(title&&item.name)title.textContent=item.name;const badge=section.querySelector('.price-badge');if(badge&&item.price)badge.textContent='शुल्क: ₹'+item.price;});}
+        function renderVendorServiceMenu(items, forms){const menu=document.getElementById('vendorServiceMenu'),dropdown=document.getElementById('vendorServiceDropdown');if(!menu||!dropdown)return;const map={};(Array.isArray(items)?items:[]).forEach(item=>{const id=String(item.id||'').trim();if(id)map[id]=item;});const fixed=[{id:'vendorServiceSearch',menuId:'service1',name:'1. Aadhaar / Coupon Search'},{id:'vendorServicePayment',menuId:'service2',name:'2. Payment & Total Count'},{id:'vendorServiceLostPan',menuId:'lostPan',name:'3. Pan Find / Lost PAN Card Service'},{id:'vendorServiceEpan',menuId:'epan',name:'4. e-PAN Download Service'},{id:'vendorServiceSurrender',menuId:'surrender',name:'5. Surrender PAN Card Service'}];const entries=fixed.map(item=>{const configured=map[item.menuId];return {id:item.id,name:configured&&configured.name?String(configured.name):item.name};});const seen={};entries.forEach(item=>{seen[item.id]=true;});(Array.isArray(forms)?forms:[]).forEach(form=>{const id=String(form.formId||'').trim();const target=document.getElementById('dynamicService_'+id);if(!id||!target||seen[id])return;seen[id]=true;entries.push({id:'dynamicService_'+id,name:String(form.name||id)});});dropdown.innerHTML=entries.map(item=>`<a href="#" onclick="openVendorService('${escapeJs(item.id)}');return false;" style="display:block;padding:10px 14px;color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.15);">🧾 ${escapeHtml(item.name)}</a>`).join('');dropdown.style.display='none';menu.style.display=currentLoggedInShop&&entries.length?'inline-block':'none';}
+        function openVendorServicesPopup(){const dropdown=document.getElementById('vendorServiceDropdown');if(!dropdown||!dropdown.innerHTML.trim())return;closeVendorServicesPopup();setNoticeBoardVisible(false);const popup=document.createElement('div');popup.id='vendorServicesPopup';popup.className='service-modal';popup.style.display='block';popup.onclick=function(event){if(event.target===popup)closeVendorServicesPopup();};const links=dropdown.innerHTML.replace(/style="[^"]*"/g,'style="display:block;padding:12px 14px;color:#123b63;background:#eef5fb;text-decoration:none;border:1px solid #c7d7e5;border-radius:6px;font-weight:700;"');popup.innerHTML=`<div class="service-modal-box" style="max-width:620px;"><button type="button" class="service-modal-close" onclick="closeVendorServicesPopup()">✕ बंद करें</button><div class="service-modal-content"><h3 style="color:#123b63;border-color:#e09b2d;">🧾 Vendor Services</h3><div style="display:flex;flex-direction:column;gap:9px;">${links}</div></div></div>`;document.body.appendChild(popup);document.body.style.overflow='hidden';}
+        function toggleVendorServicesMenu(){openVendorServicesPopup();}
+        function closeVendorServicesPopup(){const popup=document.getElementById('vendorServicesPopup');if(popup)popup.remove();const dropdown=document.getElementById('vendorServiceDropdown');if(dropdown)dropdown.style.display='none';setNoticeBoardVisible(true);if(!document.getElementById('vendorServiceModal')||document.getElementById('vendorServiceModal').style.display!=='block')document.body.style.overflow='';}
+        function openVendorService(serviceId){const target=document.getElementById(serviceId);const modal=document.getElementById('vendorServiceModal');const content=document.getElementById('vendorServiceModalContent');if(!target||!modal||!content)return;closeVendorServicesPopup();closeVendorServiceModal();target.classList.remove('vendor-service-popup-only');const placeholder=document.createElement('span');placeholder.id='vendorServicePlaceholder_'+serviceId;placeholder.style.display='none';target.parentNode.insertBefore(placeholder,target);window.__openVendorServicePlaceholder=placeholder;content.appendChild(target);target.style.display='block';modal.style.display='block';document.body.style.overflow='hidden';}
+        function closeVendorServiceModal(){const modal=document.getElementById('vendorServiceModal');const content=document.getElementById('vendorServiceModalContent');const placeholder=window.__openVendorServicePlaceholder;if(placeholder&&content&&content.contains(placeholder.nextElementSibling)){const target=content.firstElementChild;target.classList.add('vendor-service-popup-only');placeholder.parentNode.insertBefore(target,placeholder.nextSibling);placeholder.remove();}else if(placeholder&&content&&content.firstElementChild){const target=content.firstElementChild;target.classList.add('vendor-service-popup-only');placeholder.parentNode.insertBefore(target,placeholder.nextSibling);placeholder.remove();}if(modal)modal.style.display='none';if(content)content.innerHTML='';window.__openVendorServicePlaceholder=null;document.body.style.overflow='';setNoticeBoardVisible(true);}
         function loadAdminSettings(){const d=adminDataCache['SiteSettings']||[];const m={};d.slice(1).forEach(r=>{if(r[0])m[String(r[0])]=r[1]||'';});document.getElementById('welcomePopupText').value=m.WelcomePopupText||'';document.getElementById('welcomeVoiceText').value=m.WelcomeVoiceText||'';document.getElementById('welcomePopupImage').value=m.WelcomePopupImage||'';document.getElementById('homePosterText').value=m.HomePosterText||'';document.getElementById('homePosterImage').value=m.HomePosterImage||'';document.getElementById('homePosterActive').value=m.HomePosterActive||'ON';document.getElementById('companyLogoUrl').value=m.CompanyLogo||'';const lp=document.getElementById('adminCompanyLogoPreview');if(lp)lp.src=safeUrl(m.CompanyLogo||'')||document.getElementById('companyLogo').src;}
         async function uploadCompanyLogoAdmin(){const f=document.getElementById('companyLogoFile').files[0];if(!f){alert('पहले Logo image select करें।');return;}try{const r=await apiRequest({action:'adminUploadImage',sessionToken,file:{name:f.name,mimeType:f.type,data:await fileToBase64(f)},category:'Company Logo'});if(!r.success){alert(r.message||'Logo upload नहीं हुआ।');return;}document.getElementById('companyLogoUrl').value=r.url;document.getElementById('adminCompanyLogoPreview').src=safeUrl(r.url)||r.url;document.getElementById('companyLogoMsg').style.color='green';document.getElementById('companyLogoMsg').textContent='✅ Logo upload हो गया। अब Save Company Logo दबाएं।';}catch(e){alert('❌ Logo upload नहीं हुआ।');}}
         async function saveCompanyLogoAdmin(){const url=document.getElementById('companyLogoUrl').value.trim();if(!url){alert('पहले Logo upload करें या Logo URL डालें।');return;}const d=adminDataCache['SiteSettings']&&adminDataCache['SiteSettings'].length?adminDataCache['SiteSettings']:[['Key','Value']];const m={};d.slice(1).forEach(r=>{if(r[0])m[String(r[0])]=r[1]||'';});m.CompanyLogo=url;const out=[['Key','Value'],...Object.keys(m).map(k=>[k,m[k]])];try{const r=await apiRequest({action:'adminSheetSave',sessionToken,sheetName:'SiteSettings',data:out});const msg=document.getElementById('companyLogoMsg');msg.style.color=r.success?'green':'red';msg.textContent=(r.success?'✅ ':'❌ ')+(r.message||'Logo save result');if(r.success){const fixedUrl=safeUrl(url)||url;const img=document.getElementById('companyLogo');if(img)img.src=fixedUrl;const vimg=document.getElementById('vendorCompanyLogo');if(vimg){vimg.src=fixedUrl;vimg.style.display='block';}await loadAdminData();await loadPublicData();}}catch(e){alert('❌ Company Logo save नहीं हुआ।');}}
@@ -1418,6 +1450,18 @@
         }
         function escapeAttr(value) { return escapeHtml(value); }
         function escapeJs(value) { return String(value ?? '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,' '); }
+        function documentViewUrl(value) {
+            const s = String(value || '').trim();
+            if (!s) return '';
+            try {
+                const u = new URL(s);
+                if (!/^https?:$/.test(u.protocol)) return '';
+                const match = u.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                const id = match ? match[1] : (u.hostname === 'drive.google.com' ? u.searchParams.get('id') : '');
+                if (id) return 'https://drive.google.com/file/d/' + encodeURIComponent(id) + '/view';
+                return u.href;
+            } catch (_) { return ''; }
+        }
         function safeUrl(value) {
             const s = String(value || '').trim();
             if (!s) return '';
@@ -1439,11 +1483,15 @@
             const s = String(status || '').toLowerCase();
             return (s === 'complete' || s === 'completed' || s === 'success' || s === 'done') ? '#2e7d32' : '#d9534f';
         }
+        function renderAdminDownloadManager(){const box=document.getElementById('adminDownloadManager');if(!box)return;const d=adminDataCache['SiteSettings']||[];const map={};d.slice(1).forEach(r=>{if(r[0])map[String(r[0])]=r[1]||'';});let items=[];try{items=JSON.parse(map.DownloadLinks||'[]');}catch(_){}if(!Array.isArray(items)||!items.length)items=[{name:'New PAN Form',url:'https://tinpan.proteantech.in/downloads/pan/download/Form%2093.pdf'},{name:'Correction Form',url:'https://tinpan.proteantech.in/downloads/pan/download/PAN%20CR%20individual.pdf'},{name:'Annexure Form',url:'https://tinpan.proteantech.in/downloads/pan/Annexure%20A_Prescribed%20format%20of%20Certificate%20issued%20for%20Indetity%20&%20Address%20by%20MPMLA%20Municipal%20Coun.pdf'}];window.__adminDownloadItems=items;box.innerHTML=items.map((item,i)=>`<div class="download-admin-row" style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0;padding:10px;border:1px solid #ccd9e3;border-radius:6px;"><input data-download-index="${i}" data-download-key="name" value="${escapeAttr(item.name||'')}" placeholder="Button name" style="flex:1;min-width:180px;padding:8px;"><input data-download-index="${i}" data-download-key="url" value="${escapeAttr(item.url||'')}" placeholder="Download link" style="flex:2;min-width:260px;padding:8px;"><button type="button" onclick="removeDownloadAdminRow(${i})">🗑️ Remove</button></div>`).join('');}
+        function addDownloadAdminRow(){const items=window.__adminDownloadItems||[];items.push({name:'New Download',url:''});window.__adminDownloadItems=items;renderAdminDownloadManager();}
+        function removeDownloadAdminRow(index){const items=window.__adminDownloadItems||[];items.splice(index,1);window.__adminDownloadItems=items;renderAdminDownloadManager();}
+        async function saveDownloadManager(){const items=window.__adminDownloadItems||[];document.querySelectorAll('#adminDownloadManager [data-download-index]').forEach(input=>{const i=Number(input.dataset.downloadIndex);if(items[i])items[i][input.dataset.downloadKey]=input.value.trim();});const d=adminDataCache['SiteSettings']&&adminDataCache['SiteSettings'].length?adminDataCache['SiteSettings']:[['Key','Value']];const map={};d.slice(1).forEach(r=>{if(r[0])map[String(r[0])]=r[1]||'';});map.DownloadLinks=JSON.stringify(items.filter(item=>item.name&&item.url));const out=[['Key','Value'],...Object.keys(map).map(k=>[k,map[k]])];const r=await apiRequest({action:'adminSheetSave',sessionToken,sheetName:'SiteSettings',data:out});alert(r.message||'Downloads saved');if(r.success){await loadAdminData();await loadPublicData();}}
         window.addEventListener('load', applyPaymentQrImage);
         window.addEventListener('load', loadPublicData);
-        async function restoreSession(){const ss=getSession();if(!ss)return;sessionToken=ss.token||'';try{const r=await apiRequest({action:'restoreSession',sessionToken:sessionToken});if(!r.success){localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';return;}if(r.role==='admin'){showAdminPanel();await loadAdminData();}else{currentLoggedInShop=r.vendorId||ss.id;currentShopName=r.shopName||ss.shopName||ss.id;document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='block';document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;document.getElementById('totalPanCount').textContent=r.count??0;loadVendorLiveUpdates(currentLoggedInShop);}resetSessionTimer();}catch(e){console.error(e);localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';}}
-        ['click','keydown','input'].forEach(evt=>document.addEventListener(evt,()=>{if(getSession())touchSession();},{passive:true}));
-        window.addEventListener('load',()=>{loadPublicData();restoreSession();});
+        async function restoreSession(){const ss=getSession();if(!ss)return;sessionToken=ss.token||'';try{const r=await apiRequest({action:'restoreSession',sessionToken:sessionToken});if(!r.success){localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';return;}if(r.role==='admin'){showAdminPanel();await loadAdminData();}else{currentLoggedInShop=r.vendorId||ss.id;currentShopName=r.shopName||ss.shopName||ss.id;document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='block';document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;document.getElementById('totalPanCount').textContent=r.count??0;window.scrollTo({top:0,left:0,behavior:'auto'});loadVendorLiveUpdates(currentLoggedInShop);}resetSessionTimer();}catch(e){console.error(e);localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';}}
+        ['click','keydown','input'].forEach(evt=>document.addEventListener(evt,()=>{if(getSession()){if(getSession().role==='vendor')document.body.classList.add('vendor-authenticated');touchSession();}},{passive:true}));
+        window.addEventListener('load',()=>{loadPublicData();restoreSession().then(()=>{const ss=getSession();if(ss&&ss.role==='vendor')document.body.classList.add('vendor-authenticated');});});
     </script>
     <script>
   if ('serviceWorker' in navigator) {
