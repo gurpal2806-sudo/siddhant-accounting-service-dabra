@@ -1499,8 +1499,9 @@
             try {
                 const u = new URL(s);
                 if (!/^https?:$/.test(u.protocol)) return '';
-                const match = u.pathname.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
-                const id = match ? match[1] : (u.hostname === 'drive.google.com' ? u.searchParams.get('id') : '');
+                const match = u.pathname.match(/\/(?:file\/)?d\/([a-zA-Z0-9_-]+)(?:=[^/]*)?(?:\/|$)/);
+                const rawId = match ? match[1] : (u.hostname === 'drive.google.com' ? u.searchParams.get('id') : '');
+                const id = rawId ? rawId.replace(/=(?:w|s)\d+(?:-h\d+)?$/i, '') : '';
                 if (id) return 'https://drive.google.com/file/d/' + encodeURIComponent(id) + '/view';
                 return u.href;
             } catch (_) { return ''; }
