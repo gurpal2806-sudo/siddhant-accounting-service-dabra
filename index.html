@@ -1115,10 +1115,10 @@
             }catch(e){console.error(e);box.innerHTML='❌ OTP verify नहीं हो पाया।';}
         }
 
-        function saveSession(role,id,shopName,token){const key=role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY;localStorage.setItem(key,JSON.stringify({role:role||'vendor',id:id,shopName:shopName||id,token:token||'',lastActivity:Date.now()}));resetSessionTimer();}
-        function getSession(){try{const key=localStorage.getItem(ADMIN_SESSION_KEY)?ADMIN_SESSION_KEY:SESSION_KEY;const ss=JSON.parse(localStorage.getItem(key)||'null');if(!ss||!ss.id||!ss.token||!ss.lastActivity)return null;if(Date.now()-Number(ss.lastActivity)>SESSION_LIMIT){localStorage.removeItem(key);return null;}return ss;}catch(_){localStorage.removeItem(SESSION_KEY);localStorage.removeItem(ADMIN_SESSION_KEY);return null;}}
-        function touchSession(){const ss=getSession();if(!ss)return false;ss.lastActivity=Date.now();const now=Date.now();if(now-lastActivitySave>=30000){localStorage.setItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY,JSON.stringify(ss));lastActivitySave=now;}resetSessionTimer();return true;}
-        function resetSessionTimer(){if(sessionTimer)clearTimeout(sessionTimer);sessionTimer=setTimeout(()=>{const ss=getSession();if(!ss)return;localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);if(ss.role==='admin')adminLogout(true);else vendorLogout(true);},SESSION_LIMIT+1000);}
+        function saveSession(role,id,shopName,token){const key=role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY;sessionStorage.setItem(key,JSON.stringify({role:role||'vendor',id:id,shopName:shopName||id,token:token||'',lastActivity:Date.now()}));resetSessionTimer();}
+        function getSession(){try{const key=sessionStorage.getItem(ADMIN_SESSION_KEY)?ADMIN_SESSION_KEY:SESSION_KEY;const ss=JSON.parse(sessionStorage.getItem(key)||'null');if(!ss||!ss.id||!ss.token||!ss.lastActivity)return null;if(Date.now()-Number(ss.lastActivity)>SESSION_LIMIT){sessionStorage.removeItem(key);return null;}return ss;}catch(_){sessionStorage.removeItem(SESSION_KEY);sessionStorage.removeItem(ADMIN_SESSION_KEY);return null;}}
+        function touchSession(){const ss=getSession();if(!ss)return false;ss.lastActivity=Date.now();const now=Date.now();if(now-lastActivitySave>=30000){sessionStorage.setItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY,JSON.stringify(ss));lastActivitySave=now;}resetSessionTimer();return true;}
+        function resetSessionTimer(){if(sessionTimer)clearTimeout(sessionTimer);sessionTimer=setTimeout(()=>{const ss=getSession();if(!ss)return;sessionStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);if(ss.role==='admin')adminLogout(true);else vendorLogout(true);},SESSION_LIMIT+1000);}
         function showVendorWelcomePopup(){const popup=document.getElementById('vendorWelcomePopup');if(!popup)return;popup.style.display='flex';setTimeout(()=>speakVendorWelcome(),150);}
         function speechTextWithoutEmoji(value){return String(value||'').replace(/[\p{Extended_Pictographic}\p{Emoji_Presentation}\uFE0F\u200D]/gu,'').replace(/\s+/g,' ').trim();}
         function speakVendorWelcome(){if(!('speechSynthesis' in window))return;window.speechSynthesis.cancel();const message=speechTextWithoutEmoji(window.__welcomeVoiceText||'Siddhant Accounting Services Dabra में आपका हार्दिक स्वागत है। आपका दिन मंगलमय हो। आपका कार्य सफल एवं शुभ हो।');if(!message)return;const utterance=new SpeechSynthesisUtterance(message);utterance.lang='hi-IN';utterance.rate=0.9;utterance.pitch=1;window.speechSynthesis.speak(utterance);}
@@ -1139,7 +1139,7 @@
         }
 
         function vendorLogout(auto=false) {
-            if(sessionTimer){clearTimeout(sessionTimer);sessionTimer=null;} localStorage.removeItem(SESSION_KEY); if('speechSynthesis' in window)window.speechSynthesis.cancel();
+            if(sessionTimer){clearTimeout(sessionTimer);sessionTimer=null;} sessionStorage.removeItem(SESSION_KEY); if('speechSynthesis' in window)window.speechSynthesis.cancel();
             document.body.classList.remove('vendor-authenticated');
             closeVendorServiceModal();
             document.getElementById('vendor-panel').style.display = 'none';
@@ -1151,6 +1151,42 @@
             document.getElementById('result-area').innerHTML = '';
             currentLoggedInShop = '';
             currentShopName = '';
+        }
+
+        function getPaymentDueAmount(record) {
+            return record && record.paymentDue === true ? 1 : 0;
+        }
+
+        function showPaymentDuePopup(message) {
+            let popup = document.getElementById('paymentDuePopup');
+            if (!popup) {
+                popup = document.createElement('div');
+                popup.id = 'paymentDuePopup';
+                popup.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;z-index:99999;padding:20px;';
+                popup.innerHTML = `
+                    <div style="background:#fff;max-width:420px;width:100%;border-radius:12px;padding:22px 18px 16px;box-shadow:0 12px 30px rgba(0,0,0,.25);text-align:center;">
+                        <div style="font-size:28px;margin-bottom:10px;">⚠️</div>
+                        <h3 style="margin:0 0 10px;color:#d9534f;">Payment Due</h3>
+                        <p id="paymentDuePopupText" style="margin:0 0 16px;line-height:1.6;color:#333;font-size:15px;"></p>
+                        <button type="button" onclick="document.getElementById('paymentDuePopup').remove()" style="background:#0056b3;color:#fff;border:none;border-radius:6px;padding:10px 18px;font-weight:700;cursor:pointer;">OK</button>
+                    </div>
+                `;
+                document.body.appendChild(popup);
+            }
+            const textBox = document.getElementById('paymentDuePopupText');
+            if (textBox) textBox.textContent = message;
+            popup.style.display = 'flex';
+        }
+
+        function buildDownloadButton(label, url, className, paymentDue, type) {
+            const shouldBlock = Number(paymentDue) > 0;
+            if (shouldBlock) {
+                return `<button type="button" class="dl-btn ${className || ''}" style="opacity:0.7;cursor:not-allowed;" onclick="showPaymentDuePopup('आपके इस PAN कार्ड का payment due है। कृपया payment kijiye, फिर document download kijiye।')">${label}</button>`;
+            }
+            if (!url) {
+                return `<span class="dl-btn ${className || ''}" style="background:#999;">${label} उपलब्ध नहीं</span>`;
+            }
+            return `<a href="${safeUrl(url)}" target="_blank" rel="noopener" class="dl-btn ${className || ''}">${label}</a>`;
         }
 
         async function searchSlip() {
@@ -1178,6 +1214,7 @@
                 const epan = documentViewUrl(r.epan);
                 const annexure = documentViewUrl(r.annexure);
                 const savedWa = r.customerMobile || r.whatsapp || '';
+                const paymentDue = getPaymentDueAmount(r);
                 if (r.adminNotice) showVendorAdminNotice(r.adminNotice);
                 resultArea.innerHTML = `
                     <div class="result-card">
@@ -1187,18 +1224,19 @@
                          <p style="font-size:13px;margin-bottom:8px;"><b>आवेदक का नाम:</b> ${escapeHtml(r.applicantName || '-')}</p>
                         <p style="font-size:13px;margin-bottom:8px;"><b>सर्विस:</b> ${escapeHtml(r.serviceType || '-')}</p>
                         <p style="color:${statusColor(r.status)};font-weight:bold;margin-bottom:10px;">🟢 स्टेटस: ${escapeHtml(r.status || '-')}</p>
+                        ${paymentDue > 0 ? `<div style="background:#fff3cd;border:1px solid #ffeeba;color:#856404;padding:10px 12px;border-radius:6px;margin-bottom:12px;font-size:13px;font-weight:600;">⚠️ आपके इस PAN कार्ड का payment due है। कृपया payment kijiye।</div>` : ''}
                         <div class="dl-btn-group">
                             <div class="dl-row">
-                                ${slip ? `<a href="${slip}" target="_blank" rel="noopener" class="dl-btn">📄 स्लिप डाउनलोड</a>` : `<span class="dl-btn" style="background:#999;">📄 स्लिप उपलब्ध नहीं</span>`}
-                                ${epan ? `<a href="${epan}" target="_blank" rel="noopener" class="dl-btn epan">⭐ ई-पैन / OTHER DOCUMENT PDF डाउनलोड</a>` : `<span class="dl-btn epan" style="background:#aaa;">⭐ e-PAN उपलब्ध नहीं</span>`}
-                                ${annexure ? `<a href="${annexure}" target="_blank" rel="noopener" class="dl-btn annexure">📑 Annexure A Form Download</a>` : `<span class="dl-btn annexure" style="background:#aaa;">📑 Annexure A उपलब्ध नहीं</span>`}
+                                ${buildDownloadButton('📄 स्लिप डाउनलोड', slip, '', paymentDue, 'slip')}
+                                ${buildDownloadButton('⭐ ई-पैन / OTHER DOCUMENT PDF डाउनलोड', epan, 'epan', paymentDue, 'epan')}
+                                ${buildDownloadButton('📑 Annexure A Form Download', annexure, 'annexure', paymentDue, 'annexure')}
                             </div>
                             <div class="wa-send-section" style="margin-bottom:10px;">
-                                ${annexure && savedWa ? `<button class="wa-send-btn" style="background:#b02a37;margin-top:6px;" onclick="sendCustomerWhatsApp('${escapeJs(r.coupon)}','annexure','${escapeJs(annexure)}','${escapeJs(r.applicantName||'')}','${escapeJs(r.serviceType||'')}','${escapeJs(r.shopName||currentShopName||currentLoggedInShop)}')">📲 Objection WhatsApp भेजें</button>` : ''}
+                                ${annexure && savedWa ? `<button class="wa-send-btn" style="background:#b02a37;margin-top:6px;" onclick="sendCustomerWhatsApp('${escapeJs(r.coupon)}','annexure','${escapeJs(annexure)}','${escapeJs(r.applicantName||'')}','${escapeJs(r.serviceType||'')}','${escapeJs(r.shopName||currentShopName||currentLoggedInShop)}',${paymentDue})">📲 Objection WhatsApp भेजें</button>` : ''}
                             </div>
                             <div class="wa-send-section">
                                 <input type="tel" id="customerWaPhone" value="${escapeAttr(savedWa)}" placeholder="ग्राहक का मोबाइल नंबर (10 या 12 अंक)" inputmode="numeric" maxlength="12">
-                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}', '${escapeJs(slip)}', '${escapeJs(epan)}')">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
+                                <button class="wa-send-btn" onclick="sendSlipToCustomerWhatsApp('${escapeJs(r.coupon)}', '${escapeJs(slip)}', '${escapeJs(epan)}', ${paymentDue})">💬 WhatsApp पर स्लिप/ई-पैन भेजें</button>
                                 <div id="waSaveMsg" style="font-size:12px;margin-top:6px;text-align:center;"></div>
                             </div>
                         </div>
@@ -1222,7 +1260,8 @@
             if(popup)popup.style.display='none';
         }
 
-        function sendCustomerWhatsApp(queryId,type,link,applicant,service,shopName){
+        function sendCustomerWhatsApp(queryId,type,link,applicant,service,shopName,paymentDue){
+            if(Number(paymentDue)>0){showPaymentDuePopup('आपके इस PAN कार्ड का payment due है। कृपया payment kijiye, फिर document WhatsApp पर भेजें।');return;}
             let phone=(document.getElementById('customerWaPhone')?.value||'').replace(/\D/g,'');
             if(!/^\d{10,12}$/.test(phone)){alert('Column M में customer का सही mobile number नहीं मिला।');return;}
             if(phone.length===10)phone='91'+phone;
@@ -1236,7 +1275,11 @@
             window.open(`https://wa.me/${phone}?text=${encodeURIComponent(text)}`,'_blank');
         }
 
-        async function sendSlipToCustomerWhatsApp(queryId, slipUrl, epanUrl) {
+        async function sendSlipToCustomerWhatsApp(queryId, slipUrl, epanUrl, paymentDue) {
+            if (Number(paymentDue) > 0) {
+                showPaymentDuePopup('आपके इस PAN कार्ड का payment due है। कृपया payment kijiye, फिर document WhatsApp पर भेजें।');
+                return;
+            }
             const input = document.getElementById('customerWaPhone');
             const phone = (input.value || '').replace(/\D/g, '');
             const msgBox = document.getElementById('waSaveMsg');
@@ -1385,7 +1428,7 @@
         async function openAdminEditor(){await loadAdminData();renderAdminDownloadManager();}
         function openAdminLogin(){const m=document.getElementById('admin-login-modal');m.style.display='flex';document.getElementById('adminLoginId').focus();}
         function closeAdminLogin(){document.getElementById('admin-login-modal').style.display='none';document.getElementById('admin-login-error').innerHTML='';}
-        async function adminLogin(){const id=document.getElementById('adminLoginId').value.trim(),pass=document.getElementById('adminLoginPass').value,box=document.getElementById('admin-login-error');if(!id||!pass){box.textContent='Admin ID और Password दोनों डालें।';return;}box.textContent='⏳ Login हो रहा है...';try{const r=await apiRequest({action:'login',vendorId:id,password:pass});if(!r.success||r.role!=='admin'){box.textContent=r.message||'Admin login असफल।';return;}sessionToken=r.token||'';localStorage.setItem('sas_admin_token',sessionToken);closeAdminLogin();showAdminPanel();loadAdminData().then(renderAdminDownloadManager);}catch(e){box.textContent='❌ Admin login connection error।';}}
+        async function adminLogin(){const id=document.getElementById('adminLoginId').value.trim(),pass=document.getElementById('adminLoginPass').value,box=document.getElementById('admin-login-error');if(!id||!pass){box.textContent='Admin ID और Password दोनों डालें।';return;}box.textContent='⏳ Login हो रहा है...';try{const r=await apiRequest({action:'login',vendorId:id,password:pass});if(!r.success||r.role!=='admin'){box.textContent=r.message||'Admin login असफल।';return;}sessionToken=r.token||'';sessionStorage.setItem('sas_admin_token',sessionToken);closeAdminLogin();showAdminPanel();loadAdminData().then(renderAdminDownloadManager);}catch(e){box.textContent='❌ Admin login connection error।';}}
         function showAdminPanel(){document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='none';const panel=document.getElementById('admin-panel');panel.style.display='block';requestAnimationFrame(()=>setTimeout(()=>panel.scrollIntoView({behavior:'smooth',block:'center'}),80));}
         async function loadAdminData(){try{const r=await apiRequest({action:'adminData',sessionToken:sessionToken});if(!r.success){alert(r.message||'Admin data load नहीं हुआ');return;}adminDataCache=r.data||{};const sm={};(adminDataCache['SiteSettings']||[]).slice(1).forEach(r=>{if(r[0])sm[String(r[0])]=r[1]||'';});adminDataCache['SiteSettingsMap']=sm;renderAdminStats();renderAdminVendorStats();renderAdminServiceStats();renderAdminServiceManager();renderAdminVendorServiceManager();loadAdminSettings();renderVendorVoiceNoticeList();renderDynamicFormManager();const sel=document.getElementById('adminSheetSelect');sel.innerHTML=Object.keys(adminDataCache).map(n=>`<option value="${escapeAttr(n)}">${escapeHtml(n)}</option>`).join('');loadAdminSheet();}catch(e){console.error(e);alert('Admin data load नहीं हुआ।');}}
         function renderAdminStats(){const v=adminDataCache['VendorData']||[],vs=adminDataCache['Vendors']||[];const total=Math.max(0,v.length-1);const active=vs.length>1?vs.slice(1).filter(r=>String(r[3]||'').trim().toLowerCase()==='active').length:0;document.getElementById('adminStats').innerHTML=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;"><div class="count-box"><h4>Total Requests</h4><div class="count-number">${total}</div></div><div class="count-box"><h4>Active Vendors</h4><div class="count-number">${active}</div></div><div class="count-box"><h4>Total Vendors</h4><div class="count-number">${Math.max(0,vs.length-1)}</div></div></div>`;}
@@ -1444,7 +1487,7 @@
         function addAdminRow(){const n=document.getElementById('adminSheetSelect').value,d=adminDataCache[n]||[];if(!d.length)return;d.push(new Array(d[0].length).fill(''));adminDataCache[n]=d;loadAdminSheet();}
         function deleteAdminRow(row){const n=document.getElementById('adminSheetSelect').value,d=adminDataCache[n]||[];if(row<2)return;d.splice(row-1,1);adminDataCache[n]=d;loadAdminSheet();}
         async function saveAdminSheet(){const n=document.getElementById('adminSheetSelect').value,table=document.querySelectorAll('#adminSheetArea input'),d=adminDataCache[n]||[];table.forEach(inp=>{const r=+inp.dataset.r,c=+inp.dataset.c;if(d[r-1])d[r-1][c-1]=inp.value;});adminDataCache[n]=d;try{const r=await apiRequest({action:'adminSheetSave',sessionToken:sessionToken,sheetName:n,data:d});alert(r.message||'Save complete');if(r.success)loadAdminData();}catch(e){alert('Save नहीं हुआ।');}}
-        function adminLogout(auto=false){sessionToken='';localStorage.removeItem(ADMIN_SESSION_KEY);if(sessionTimer){clearTimeout(sessionTimer);sessionTimer=null;}document.getElementById('admin-panel').style.display='none';document.getElementById('login-section').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+        function adminLogout(auto=false){sessionToken='';sessionStorage.removeItem(ADMIN_SESSION_KEY);if(sessionTimer){clearTimeout(sessionTimer);sessionTimer=null;}document.getElementById('admin-panel').style.display='none';document.getElementById('login-section').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
         }
@@ -1489,7 +1532,7 @@
         async function saveDownloadManager(){const items=window.__adminDownloadItems||[];document.querySelectorAll('#adminDownloadManager [data-download-index]').forEach(input=>{const i=Number(input.dataset.downloadIndex);if(items[i])items[i][input.dataset.downloadKey]=input.value.trim();});const d=adminDataCache['SiteSettings']&&adminDataCache['SiteSettings'].length?adminDataCache['SiteSettings']:[['Key','Value']];const map={};d.slice(1).forEach(r=>{if(r[0])map[String(r[0])]=r[1]||'';});map.DownloadLinks=JSON.stringify(items.filter(item=>item.name&&item.url));const out=[['Key','Value'],...Object.keys(map).map(k=>[k,map[k]])];const r=await apiRequest({action:'adminSheetSave',sessionToken,sheetName:'SiteSettings',data:out});alert(r.message||'Downloads saved');if(r.success){await loadAdminData();await loadPublicData();}}
         window.addEventListener('load', applyPaymentQrImage);
         window.addEventListener('load', loadPublicData);
-        async function restoreSession(){const ss=getSession();if(!ss)return;sessionToken=ss.token||'';try{const r=await apiRequest({action:'restoreSession',sessionToken:sessionToken});if(!r.success){localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';return;}if(r.role==='admin'){showAdminPanel();await loadAdminData();}else{currentLoggedInShop=r.vendorId||ss.id;currentShopName=r.shopName||ss.shopName||ss.id;document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='block';document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;document.getElementById('totalPanCount').textContent=r.count??0;window.scrollTo({top:0,left:0,behavior:'auto'});loadVendorLiveUpdates(currentLoggedInShop);}resetSessionTimer();}catch(e){console.error(e);localStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';}}
+        async function restoreSession(){const ss=getSession();if(!ss)return;sessionToken=ss.token||'';try{const r=await apiRequest({action:'restoreSession',sessionToken:sessionToken});if(!r.success){sessionStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';return;}if(r.role==='admin'){showAdminPanel();await loadAdminData();}else{currentLoggedInShop=r.vendorId||ss.id;currentShopName=r.shopName||ss.shopName||ss.id;document.getElementById('login-section').style.display='none';document.getElementById('vendor-panel').style.display='block';document.getElementById('welcome-shop-name').innerHTML=`स्वागत है: ${escapeHtml(currentShopName)} (${escapeHtml(currentLoggedInShop)})`;document.getElementById('totalPanCount').textContent=r.count??0;window.scrollTo({top:0,left:0,behavior:'auto'});loadVendorLiveUpdates(currentLoggedInShop);}resetSessionTimer();}catch(e){console.error(e);sessionStorage.removeItem(ss.role==='admin'?ADMIN_SESSION_KEY:SESSION_KEY);sessionToken='';}}
         ['click','keydown','input'].forEach(evt=>document.addEventListener(evt,()=>{if(getSession()){if(getSession().role==='vendor')document.body.classList.add('vendor-authenticated');touchSession();}},{passive:true}));
         window.addEventListener('load',()=>{loadPublicData();restoreSession().then(()=>{const ss=getSession();if(ss&&ss.role==='vendor')document.body.classList.add('vendor-authenticated');});});
     </script>
